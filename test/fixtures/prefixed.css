@@ -1,0 +1,11 @@
+a {
+	-x-margin: 0;
+}
+
+b {
+	-x-margin: 0 *;
+}
+
+c {
+	-x-margin: * 0;
+}
