@@ -1,26 +1,67 @@
-var postcss = require('postcss');
+// tooling
+const postcss = require('postcss');
 
-module.exports = postcss.plugin('postcss-short-spacing', function (opts) {
-	var spacer = opts && opts.spacer ? opts.spacer : '*';
-	var prefix = opts && opts.prefix ? '-' + opts.prefix + '-' : '';
+// side properties
+const properties = ['top', 'right', 'bottom', 'left'];
 
-	return function (css) {
-		css.walkDecls(new RegExp('^' + prefix + '(margin|padding)$'), function (decl) {
-			var name = prefix ? decl.prop.slice(prefix.length) : decl.prop;
-			var edge = postcss.list.space(decl.value);
+// plugin
+module.exports = postcss.plugin('postcss-short-spacing', ({
+	prefix = '',
+	skip   = '*'
+}) => {
+	// dashed prefix
+	const dashedPrefix = prefix ? '-' + prefix + '-' : '';
 
-			if (edge.length && edge.indexOf(spacer) !== -1) {
-				if (!edge[1]) edge[1] = edge[0];
-				if (!edge[2]) edge[2] = edge[0];
-				if (!edge[3]) edge[3] = edge[1];
+	// property pattern
+	const propertyMatch = new RegExp(`^${ dashedPrefix }(margin|padding)$`);
 
-				if (edge[0] !== spacer) decl.cloneBefore({ prop: name + '-top',    value: edge[0] });
-				if (edge[1] !== spacer) decl.cloneBefore({ prop: name + '-right',  value: edge[1] });
-				if (edge[2] !== spacer) decl.cloneBefore({ prop: name + '-bottom', value: edge[2] });
-				if (edge[3] !== spacer) decl.cloneBefore({ prop: name + '-left',   value: edge[3] });
+	return (css) => {
+		// walk each matching declaration
+		css.walkDecls(propertyMatch, (decl) => {
+			// unprefixed property
+			const property = decl.prop.match(propertyMatch)[1];
 
+			// if a prefix is in use
+			if (prefix) {
+				// remove it from the property
+				decl.prop = property;
+			}
+
+			// space-separated values (top, right, bottom, left)
+			const values = postcss.list.space(decl.value);
+
+			// if the values contain a skip token
+			if (values.indexOf(skip) !== -1) {
+				// conditionally add a right value
+				if (values.length === 1) {
+					values.push(values[0]);
+				}
+
+				// conditionally add a bottom value
+				if (values.length === 2) {
+					values.push(values[0]);
+				}
+
+				// conditionally add a left value
+				if (values.length === 3) {
+					values.push(values[1]);
+				}
+
+				// for each side property
+				properties.forEach((side, index) => {
+					// if the value is not a skip token
+					if (values[index] !== skip) {
+						// create a new declaration for the spacing side property
+						decl.cloneBefore({
+							prop:  `${ property }-${ side }`,
+							value: values[index]
+						});
+					}
+				});
+
+				// remove the original spacing declaration
 				decl.remove();
-			} else if (prefix) decl.prop = name;
+			}
 		});
 	};
 });
