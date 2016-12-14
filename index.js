@@ -8,9 +8,9 @@ const properties = ['top', 'right', 'bottom', 'left'];
 module.exports = postcss.plugin('postcss-short-spacing', ({
 	prefix = '',
 	skip   = '*'
-}) => {
+} = {}) => {
 	// dashed prefix
-	const dashedPrefix = prefix ? '-' + prefix + '-' : '';
+	const dashedPrefix = prefix ? `-${ prefix }-` : '';
 
 	// property pattern
 	const propertyMatch = new RegExp(`^${ dashedPrefix }(margin|padding)$`);
@@ -65,3 +65,10 @@ module.exports = postcss.plugin('postcss-short-spacing', ({
 		});
 	};
 });
+
+// override plugin#process
+module.exports.process = function (cssString, pluginOptions, processOptions) {
+	return postcss([
+		0 in arguments ? module.exports(pluginOptions) : module.exports()
+	]).process(cssString, processOptions);
+};

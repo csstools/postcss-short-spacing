@@ -1,5 +1,11 @@
 # Changes to Spacing Shorthand
 
+### 2.0.1 (December 8, 2016)
+
+- Added: `#Plugin.process` for stand-alone execution and testing
+- Updated: Use destructing assignment on plugin options
+- Updated: Use template literals
+
 ### 2.0.0 (December 6, 2016)
 
 - Added: Define `skip` token
