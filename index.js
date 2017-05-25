@@ -5,10 +5,11 @@ const postcss = require('postcss');
 const properties = ['top', 'right', 'bottom', 'left'];
 
 // plugin
-module.exports = postcss.plugin('postcss-short-spacing', ({
-	prefix = '',
-	skip   = '*'
-} = {}) => {
+module.exports = postcss.plugin('postcss-short-spacing', (opts) => {
+	// options
+	const prefix = opts && 'prefix' in opts ? opts.prefix : '';
+	const skip = opts && 'skip' in opts ? opts.skip : '*';
+
 	// dashed prefix
 	const dashedPrefix = prefix ? `-${ prefix }-` : '';
 
@@ -65,10 +66,3 @@ module.exports = postcss.plugin('postcss-short-spacing', ({
 		});
 	};
 });
-
-// override plugin#process
-module.exports.process = function (cssString, pluginOptions, processOptions) {
-	return postcss([
-		0 in arguments ? module.exports(pluginOptions) : module.exports()
-	]).process(cssString, processOptions);
-};
