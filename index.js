@@ -1,68 +1,135 @@
-// tooling
-const postcss = require('postcss');
+import postcss from 'postcss';
 
-// side properties
-const properties = ['top', 'right', 'bottom', 'left'];
+export default postcss.plugin('postcss-short-spacing', opts => {
+	// get the prefix
+	const prefix = 'prefix' in Object(opts) ? `-${opts.prefix}-` : '';
 
-// plugin
-module.exports = postcss.plugin('postcss-short-spacing', (opts) => {
-	// options
-	const prefix = opts && 'prefix' in opts ? opts.prefix : '';
-	const skip = opts && 'skip' in opts ? opts.skip : '*';
-
-	// dashed prefix
-	const dashedPrefix = prefix ? `-${ prefix }-` : '';
+	// get the skip token
+	const skip = 'skip' in Object(opts) ? String(opts.skip) : '*';
 
 	// property pattern
-	const propertyMatch = new RegExp(`^${ dashedPrefix }(margin|padding)$`);
+	const spacingPropertyRegExp = new RegExp(`^${prefix}(margin|padding)(-(?:block|end|inline|start))?$`, 'i');
 
-	return (css) => {
+	return root => {
 		// walk each matching declaration
-		css.walkDecls(propertyMatch, (decl) => {
-			// unprefixed property
-			const property = decl.prop.match(propertyMatch)[1];
+		root.walkDecls(spacingPropertyRegExp, decl => {
+			const [, property, logical] = decl.prop.match(spacingPropertyRegExp);
 
-			// if a prefix is in use
+			// update the property
 			if (prefix) {
-				// remove it from the property
-				decl.prop = property;
+				decl.prop = `${property}${logical || ''}`
 			}
 
-			// space-separated values (top, right, bottom, left)
+			// get the space-separated values
 			const values = postcss.list.space(decl.value);
 
-			// if the values contain a skip token
-			if (values.indexOf(skip) !== -1) {
-				// conditionally add a right value
-				if (values.length === 1) {
-					values.push(values[0]);
+			if (values.includes(skip)) {
+				const isBlockInline = blockInlineRegExp.test(logical);
+				const isStartEnd = startEndRegExp.test(logical);
+				const isFourSide = !logical;
+
+				if (isBlockInline) {
+					transformBlockInline(decl, `${property}${logical}-&`, values, skip);
+				} else if (isStartEnd) {
+					transformStartEnd(decl, `${property}-&${logical}`, values, skip);
+				} else if (isFourSide) {
+					transformFourSide(decl, `${property}-&`, values, skip);
 				}
 
-				// conditionally add a bottom value
-				if (values.length === 2) {
-					values.push(values[0]);
-				}
-
-				// conditionally add a left value
-				if (values.length === 3) {
-					values.push(values[1]);
-				}
-
-				// for each side property
-				properties.forEach((side, index) => {
-					// if the value is not a skip token
-					if (values[index] !== skip) {
-						// create a new declaration for the spacing side property
-						decl.cloneBefore({
-							prop:  `${ property }-${ side }`,
-							value: values[index]
-						});
-					}
-				});
-
-				// remove the original spacing declaration
 				decl.remove();
 			}
 		});
 	};
 });
+
+const blockInlineRegExp = /^-(block|inline)$/i;
+const startEndRegExp = /^-(start|end)$/i;
+
+// conditionally add start/end values
+const transformBlockInline = (decl, property, values, skip) => { // eslint-disable-line max-params
+	const [$1, $2] = values;
+
+	if ($1 && $1 !== skip) {
+		decl.cloneBefore({
+			prop: property.replace('&', 'start'),
+			value: $1
+		});
+	}
+
+	if ($2 && $2 !== skip) {
+		decl.cloneBefore({
+			prop: property.replace('&', 'end'),
+			value: $2
+		});
+	}
+};
+
+// conditionally add block/inline values
+const transformStartEnd = (decl, property, values, skip) => { // eslint-disable-line max-params
+	const [$1, $2] = values;
+
+	if ($1 && $1 !== skip) {
+		decl.cloneBefore({
+			prop: property.replace('&', 'block'),
+			value: $1
+		});
+	}
+
+	if ($2 && $2 !== skip) {
+		decl.cloneBefore({
+			prop: property.replace('&', 'inline'),
+			value: $2
+		});
+	}
+};
+
+// conditionally add top/right/bottom/left values
+const transformFourSide = (decl, property, values, skip) => { // eslint-disable-line max-params
+	const [$1, $2, $3, $4] = values;
+
+	// conditionally add a left value
+	if ($4 && $4 !== skip) {
+		decl.cloneBefore({
+			prop: property.replace('&', 'left'),
+			value: $4
+		});
+	}
+
+	// conditionally add a bottom value
+	if ($3 && $3 !== skip) {
+		decl.cloneBefore({
+			prop: property.replace('&', 'bottom'),
+			value: $3
+		});
+	}
+
+	// conditionally add a right value
+	if ($2 && $2 !== skip) {
+		if (!$4) {
+			decl.cloneBefore({
+				prop: property.replace('&', 'left'),
+				value: $2
+			});
+		}
+
+		decl.cloneBefore({
+			prop: property.replace('&', 'right'),
+			value: $2
+		});
+	}
+
+	// conditionally add a top value
+	if ($1 && $1 !== skip) {
+		if (!$3) {
+			decl.cloneBefore({
+				prop: property.replace('&', 'bottom'),
+				value: $1
+			});
+		}
+
+		decl.cloneBefore({
+			prop: property.replace('&', 'top'),
+			value: $1
+		});
+	}
+};

@@ -1,11 +1,54 @@
-a {
+.test-unmodified {
 	-x-margin: 0;
+	-x-padding: 0;
 }
 
-b {
+.test-vertical {
 	-x-margin: 0 *;
+	-x-padding: 0 *;
 }
 
-c {
+.test-horizontal {
 	-x-margin: * 0;
+	-x-padding: * 0;
+}
+
+.test-top {
+	-x-margin: 0 * *;
+	-x-padding: 0 * *;
+}
+
+.test-right {
+	-x-margin: * 0 * *;
+	-x-padding: * 0 * *;
+}
+
+.test-bottom {
+	-x-margin: * * 0;
+	-x-padding: * * 0;
+}
+
+.test-left {
+	-x-margin: * * * 0;
+	-x-padding: * * * 0;
+}
+
+.test-block {
+	-x-margin-block: 0 *;
+	-x-padding-block: * 0;
+}
+
+.test-inline {
+	-x-margin-inline: 0 *;
+	-x-padding-inline: * 0;
+}
+
+.test-start {
+	-x-margin-start: 0 *;
+	-x-padding-start: * 0;
+}
+
+.test-end {
+	-x-margin-end: 0 *;
+	-x-padding-end: * 0;
 }
