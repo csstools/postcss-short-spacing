@@ -1,20 +1,18 @@
-# Spacing Shorthand [<img src="https://postcss.github.io/postcss/logo.svg" alt="PostCSS Logo" width="90" height="90" align="right">][postcss]
+# PostCSS Short Spacing [<img src="https://postcss.github.io/postcss/logo.svg" alt="PostCSS" width="90" height="90" align="right">][postcss]
 
 [![NPM Version][npm-img]][npm-url]
 [![Build Status][cli-img]][cli-url]
-[![Windows Build Status][win-img]][win-url]
-[![Gitter Chat][git-img]][git-url]
+[![Support Chat][git-img]][git-url]
 
-[Spacing Shorthand] lets you omit sides within `margin` and `padding` properties in CSS.
+[PostCSS Short Spacing] lets you omit sides within `margin` and `padding`
+properties in CSS.
 
-```css
-/* before */
-
+```pcss
 section {
   margin: 1em *;
 }
 
-/* after */
+/* becomes */
 
 section {
   margin-top: 1em;
@@ -22,113 +20,95 @@ section {
 }
 ```
 
-## Options
-
-#### `prefix`
-
-Type: `String`  
-Default: `""`
-
-Adds an optional prefix to the `margin` and `padding` properties (e.g. `"x"` for `-x-margin`). Wrapping dashes (`-`) are automatically applied.
-
-#### `skip`
-
-Type: `String`  
-Default: `"*"`
-
-Specifies the skip token used to ignore a length.
+Supported properties include `margin`, `margin-block`, `margin-inline`,
+`margin-start`, `margin-end`, `padding`, `padding-block`, `padding-inline`,
+`padding-start`, and `padding-end`.
 
 ## Usage
 
-Add [Spacing Shorthand] to your build tool:
+Add [PostCSS Short Spacing] to your project:
 
 ```bash
 npm install postcss-short-spacing --save-dev
 ```
 
-#### Node
+Use [PostCSS Short Spacing] to process your CSS:
 
 ```js
-require('postcss-short-spacing').process(YOUR_CSS, { /* options */ });
+const postcssShortSpacing = require('postcss-short-spacing');
+
+postcssShortSpacing.process(YOUR_CSS /*, processOptions, pluginOptions */);
 ```
 
-#### PostCSS
-
-Add [PostCSS] to your build tool:
-
-```bash
-npm install postcss --save-dev
-```
-
-Load [Spacing Shorthand] as a PostCSS plugin:
+Or use it as a [PostCSS] plugin:
 
 ```js
+const postcss = require('postcss');
+const postcssShortSpacing = require('postcss-short-spacing');
+
 postcss([
-  require('postcss-short-spacing')({ /* options */ })
-]).process(YOUR_CSS, /* options */);
+  postcssShortSpacing(/* pluginOptions */)
+]).process(YOUR_CSS /*, processOptions */);
 ```
 
-#### Gulp
+[PostCSS Short Spacing] runs in all Node environments, with special instructions for:
 
-Add [Gulp PostCSS] to your build tool:
+| [Node](INSTALL.md#node) | [PostCSS CLI](INSTALL.md#postcss-cli) | [Webpack](INSTALL.md#webpack) | [Create React App](INSTALL.md#create-react-app) | [Gulp](INSTALL.md#gulp) | [Grunt](INSTALL.md#grunt) |
+| --- | --- | --- | --- | --- | --- |
 
-```bash
-npm install gulp-postcss --save-dev
-```
+## Options
 
-Enable [Spacing Shorthand] within your Gulpfile:
+#### prefix
+
+The `prefix` option defines a prefix required by properties being transformed.
+Wrapping dashes are automatically applied, so that `x` would transform
+`-x-margin`.
 
 ```js
-var postcss = require('gulp-postcss');
-
-gulp.task('css', function () {
-  return gulp.src('./src/*.css').pipe(
-    postcss([
-      require('postcss-short-spacing')({ /* options */ })
-    ])
-  ).pipe(
-    gulp.dest('.')
-  );
-});
+postcssShortSpacing({ prefix: 'x' });
 ```
 
-#### Grunt
+```pcss
+body {
+  -x-margin: 1em *;
+}
 
-Add [Grunt PostCSS] to your build tool:
+/* becomes */
 
-```bash
-npm install grunt-postcss --save-dev
+section {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
 ```
 
-Enable [Spacing Shorthand] within your Gruntfile:
+#### skip
+
+The `skip` option defines the skip token used to ignore portions of the
+shorthand.
 
 ```js
-grunt.loadNpmTasks('grunt-postcss');
-
-grunt.initConfig({
-  postcss: {
-    options: {
-      use: [
-        require('postcss-short-spacing')({ /* options */ })
-      ]
-    },
-    dist: {
-      src: '*.css'
-    }
-  }
-});
+postcssShortSpacing({ skip: '-' });
 ```
 
-[npm-url]: https://www.npmjs.com/package/postcss-short-spacing
-[npm-img]: https://img.shields.io/npm/v/postcss-short-spacing.svg
-[cli-url]: https://travis-ci.org/jonathantneal/postcss-short-spacing
+```pcss
+body {
+  -x-margin: 1em -;
+}
+
+/* becomes */
+
+section {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+```
+
 [cli-img]: https://img.shields.io/travis/jonathantneal/postcss-short-spacing.svg
-[win-url]: https://ci.appveyor.com/project/jonathantneal/postcss-short-spacing
-[win-img]: https://img.shields.io/appveyor/ci/jonathantneal/postcss-short-spacing.svg
+[cli-url]: https://travis-ci.org/jonathantneal/postcss-short-spacing
+[git-img]: https://img.shields.io/badge/support-chat-blue.svg
 [git-url]: https://gitter.im/postcss/postcss
-[git-img]: https://img.shields.io/badge/chat-gitter-blue.svg
+[npm-img]: https://img.shields.io/npm/v/postcss-short-spacing.svg
+[npm-url]: https://www.npmjs.com/package/postcss-short-spacing
 
-[Spacing Shorthand]: https://github.com/jonathantneal/postcss-short-spacing
 [PostCSS]: https://github.com/postcss/postcss
-[Gulp PostCSS]: https://github.com/postcss/gulp-postcss
-[Grunt PostCSS]: https://github.com/nDmitry/grunt-postcss
+[PostCSS Short Spacing]: https://github.com/jonathantneal/postcss-short-spacing

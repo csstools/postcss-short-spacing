@@ -1,11 +1,54 @@
-a {
+.test-unmodified {
 	margin: 0;
+	padding: 0;
 }
 
-b {
+.test-vertical {
 	margin: 0 *;
+	padding: 0 *;
 }
 
-c {
+.test-horizontal {
 	margin: * 0;
+	padding: * 0;
+}
+
+.test-top {
+	margin: 0 * *;
+	padding: 0 * *;
+}
+
+.test-right {
+	margin: * 0 * *;
+	padding: * 0 * *;
+}
+
+.test-bottom {
+	margin: * * 0;
+	padding: * * 0;
+}
+
+.test-left {
+	margin: * * * 0;
+	padding: * * * 0;
+}
+
+.test-block {
+	margin-block: 0 *;
+	padding-block: * 0;
+}
+
+.test-inline {
+	margin-inline: 0 *;
+	padding-inline: * 0;
+}
+
+.test-start {
+	margin-start: 0 *;
+	padding-start: * 0;
+}
+
+.test-end {
+	margin-end: 0 *;
+	padding-end: * 0;
 }

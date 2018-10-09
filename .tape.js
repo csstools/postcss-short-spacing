@@ -3,20 +3,14 @@ module.exports = {
 		'basic': {
 			message: 'supports basic usage'
 		},
-		'basic:w-prefix': {
-			message: 'ignores basic usage when { prefix: "x" }',
-			options: {
-				prefix: 'x'
-			}
-		},
 		'prefix': {
-			message: 'ignores prefix usage'
+			message: 'ignores prefix without option usage',
+			expect: 'prefix.css'
 		},
-		'prefix:w-prefix': {
-			message: 'supports prefix usage when { prefix: "x" }',
-			options: {
-				prefix: 'x'
-			}
+		'prefix:opt': {
+			message: 'supports { prefix: "x" } usage',
+			options: { prefix: 'x' },
+			expect: 'basic.expect.css'
 		}
 	}
 };

@@ -1,4 +1,10 @@
-# Changes to Spacing Shorthand
+# Changes to PostCSS Short Spacing
+
+### 4.0.0 (October 9, 2018)
+
+- Added: Support for Node 6
+- Added: Support for PostCSS 7
+- Added: Support for logical spacing properties
 
 ### 3.0.0 (May 25, 2017)
 
